@@ -1,22 +1,27 @@
-# 🔊 Thonburian TTS API (Standalone)
+# 🔊 Thonburian TTS API (Thai Text-to-Speech) - Docker & FastAPI
 
-Thai Text-to-Speech API ที่สร้างจาก [Thonburian TTS](https://github.com/biodatlab/thonburian-tts) (F5-TTS) พร้อม REST API สำเร็จรูปสำหรับการเชื่อมต่อกับระบบภายนอก เช่น n8n, Make.com, หรือแอปพลิเคชันของคุณเอง
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-Ready-blue?logo=docker)](https://hub.docker.com/r/xylamana/thonburian-tts)
+[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue?logo=python)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-1.0-green?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🌟 จุดเด่น
-- 🐳 **พร้อมใช้งานบน Docker:** แค่รัน `docker compose up -d`
-- ⚡ **REST API:** ใช้งานผ่าน FastAPI ที่มีโครงสร้างเรียบง่าย
-- 👥 **Voice Cloning:** รองรับการทำโคลนเสียงคนพูด (แค่มีไฟล์เสียงต้นฉบับ 3-15 วินาที)
-- 📝 **รองรับข้อความยาว:** ประมวลผลข้อความได้สูงสุด 5,000 ตัวอักษรต่อครั้ง
-- 🚀 **CPU & GPU Support:** ทำงานได้ทั้งเครื่องธรรมดา และเครื่องที่มี NVIDIA GPU
+**Thonburian TTS API** เป็นระบบแปลงข้อความภาษาไทยเป็นเสียงพูด (Thai Text-to-Speech) คุณภาพสูง ที่พัฒนาต่อยอดมาจากโมเดล [Thonburian TTS (F5-TTS)](https://github.com/biodatlab/thonburian-tts) มาพร้อมกับ **REST API** สำเร็จรูปที่สร้างด้วย **FastAPI** ทำให้สามารถเชื่อมต่อกับระบบภายนอกอื่นๆ เช่น **n8n, Make.com, แชทบอท (Chatbot), หรือแอปพลิเคชันของคุณเอง** ได้อย่างง่ายดาย
+
+## ✨ จุดเด่นและฟีเจอร์ (Features)
+- 🇹🇭 **เสียงภาษาไทยธรรมชาติ (Thai TTS):** รองรับการแปลงประโยคภาษาไทยเป็นเสียงพูดที่ลื่นไหล
+- 👥 **ระบบโคลนเสียง (Voice Cloning):** สามารถจำลองเสียงคนพูดได้ เพียงแค่อัพโหลดไฟล์เสียงต้นฉบับ 3-15 วินาที
+- 🐳 **ติดตั้งง่ายด้วย Docker:** แค่โหลดไฟล์ไปรัน `docker compose up -d` ระบบก็พร้อมใช้งาน ไม่ต้องตั้งค่า Environment ให้ยุ่งยาก
+- 📝 **รองรับข้อความยาว:** ประมวลผลข้อความได้สูงสุดถึง **5,000 ตัวอักษร** ต่อหนึ่งครั้ง
+- 🚀 **CPU & GPU Support:** ทำงานได้บน Server ทั่วไป (CPU) และเครื่องที่มีการ์ดจอ NVIDIA (GPU) เพื่อเร่งความเร็ว
 
 ---
 
-## 🚀 วิธีติดตั้ง (ใช้งานผ่าน Docker Hub)
+## 🚀 วิธีติดตั้งและใช้งาน (Quick Start via Docker Hub)
 
-ระบบนี้ได้ถูกคอมไพล์และอัพโหลดขึ้น Docker Hub ให้พร้อมใช้งานแล้ว คุณไม่จำเป็นต้อง Build โค้ดเองให้เสียเวลา
+ระบบนี้ได้ถูกแพ็คเป็น **Docker Image** และอัพโหลดขึ้น Docker Hub เรียบร้อยแล้ว (ชื่อ Image: `xylamana/thonburian-tts:latest`) คุณสามารถรันระบบได้ทันทีโดยทำตามขั้นตอนต่อไปนี้:
 
-### 1. ดาวน์โหลดไฟล์ตั้งค่า
-คุณสามารถนำไฟล์ `docker-compose.yml` จาก Repository นี้ไปวางไว้ที่เครื่อง Server ที่ต้องการได้เลย โค้ดด้านในจะหน้าตาแบบนี้:
+### 1. โหลดไฟล์ docker-compose.yml
+สร้างไฟล์ `docker-compose.yml` บน Server ของคุณ และใส่โค้ดด้านล่างนี้:
 
 ```yaml
 services:
@@ -27,9 +32,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - tts_outputs:/app/outputs
-      - tts_models:/app/models_cache
-      - tts_refs:/app/ref_samples
+      - tts_outputs:/app/outputs        # สำหรับเก็บไฟล์เสียงที่สร้างเสร็จ
+      - tts_models:/app/models_cache    # สำหรับเก็บแคชของ AI Model
+      - tts_refs:/app/ref_samples       # สำหรับเก็บไฟล์เสียงตัวอย่าง (Voice Cloning)
     environment:
       - HF_HOME=/app/models_cache
 
@@ -39,51 +44,55 @@ volumes:
   tts_refs:
 ```
 
-### 2. รันคำสั่ง
-เปิด Terminal ในโฟลเดอร์ที่มีไฟล์ `docker-compose.yml` แล้วรัน:
+### 2. รันระบบ (Start the API)
+เปิด Terminal ในโฟลเดอร์ที่มีไฟล์ `docker-compose.yml` แล้วพิมพ์คำสั่ง:
 
 ```bash
 docker compose up -d
 ```
-ระบบจะไปดึง Image จาก Docker Hub มาให้และพร้อมใช้งานทันที!
-
-## 🌐 ทดสอบการทำงาน
-
-- เช็คสถานะ API: `http://localhost:8000/health`
-- ดู API Docs (Swagger): `http://localhost:8000/docs`
+ระบบจะดึง Image และรัน API ให้คุณโดยอัตโนมัติ!
 
 ---
 
-## 📡 API Endpoints 
+## 🌐 ทดสอบการทำงาน (Testing the API)
 
-| Method | Endpoint | คำอธิบาย |
-|--------|----------|----------|
-| GET | `/health` | ตรวจสอบสถานะว่าระบบและ Model พร้อมทำงานหรือไม่ |
-| GET | `/status` | เช็คสถานะโดยละเอียด (ไฟล์ค้าง, การ์ดจอ ฯลฯ) |
-| POST | `/tts` | ส่งข้อความไปสร้างเสียง (รูปแบบ JSON) |
-| POST | `/tts/clone` | ส่งข้อความ + อัพโหลดไฟล์เสียงตัวอย่าง (Multipart Form) |
-| GET | `/audio/{file_id}` | ดาวน์โหลดไฟล์เสียง |
-| DELETE | `/audio/{file_id}` | ลบไฟล์เสียงออกจากระบบ |
-
-*หมายเหตุ: ไฟล์เสียงที่สร้างจะถูกตั้งเวลาเคลียร์ทิ้งอัตโนมัติหากเกิน 1 ชั่วโมง*
+หลังจากรัน Container แล้ว ให้เข้าไปที่เบราว์เซอร์:
+- **เช็คสถานะระบบ (Health Check):** `http://localhost:8000/health`
+- **ดูคู่มือ API Docs (Swagger UI):** `http://localhost:8000/docs`
 
 ---
 
-## 💡 โครงสร้างไฟล์ใน Repository นี้
+## 📡 สรุป API Endpoints (API Reference)
+
+| HTTP Method | Endpoint | หน้าที่และการใช้งาน |
+|-------------|----------|-------------------|
+| **GET** | `/health` | ตรวจสอบสถานะว่าระบบและ AI Model โหลดเสร็จพร้อมทำงานหรือยัง |
+| **GET** | `/status` | เช็คสถานะโดยละเอียด (จำนวนไฟล์ค้าง, เช็คการ์ดจอ) |
+| **POST** | `/tts` | ส่งข้อความไปสร้างเสียง (รูปแบบ JSON Request) |
+| **POST** | `/tts/clone` | ส่งข้อความ พร้อมแนบไฟล์เสียงต้นแบบเพื่อจำลองเสียง (Multipart Form) |
+| **GET** | `/audio/{file_id}` | ดาวน์โหลดไฟล์เสียง `.wav` หรือ `.mp3` |
+| **DELETE**| `/audio/{file_id}` | ลบไฟล์เสียงออกจาก Server ทันที |
+
+*(💡 เกร็ดความรู้: ไฟล์เสียงที่สร้างเสร็จจะถูกระบบตั้งเวลาลบทิ้งอัตโนมัติเมื่ออายุเกิน 1 ชั่วโมง เพื่อประหยัดพื้นที่ Server)*
+
+---
+
+## 💡 โครงสร้างโฟลเดอร์สำหรับนักพัฒนา (For Developers)
+หากคุณต้องการ Build โค้ดเอง:
 ```
 .
-├── Dockerfile              # คำสั่งแพ็คแอปพลิเคชันเป็น Image
-├── docker-compose.yml      # สำหรับ Start API แบบ Standalone
-├── api.py                  # Source Code หลักของ FastAPI
-├── requirements.txt        # ไฟล์ระบุ Dependencies (รวมการล็อคเวอร์ชั่นของ PyTorch เพื่อกัน Error)
-└── .dockerignore           # ไฟล์ที่ไม่ต้องการเอาเข้า Image
+├── Dockerfile              # คำสั่งแพ็คแอปพลิเคชันเป็น Docker Image
+├── docker-compose.yml      # ไฟล์รัน API
+├── api.py                  # Source Code หลัก (FastAPI)
+├── requirements.txt        # ไฟล์แพ็คเกจ Python
+└── .dockerignore           # ไฟล์ตั้งค่าละเว้น
 ```
 
 ---
 
-## ⚙️ การตั้งค่า GPU (ถ้าเครื่องมี NVIDIA GPU)
+## ⚙️ การเปิดใช้งานการ์ดจอ (NVIDIA GPU Support)
 
-เอาเครื่องหมาย `#` ออกในบรรทัดเหล่านี้ของ `docker-compose.yml`:
+หาก Server ของคุณมีการ์ดจอ และติดตั้ง **Nvidia Container Toolkit** เรียบร้อยแล้ว ให้เอาเครื่องหมาย `#` ออกในบรรทัดเหล่านี้ของ `docker-compose.yml`:
 ```yaml
     deploy:
       resources:
@@ -93,3 +102,8 @@ docker compose up -d
               count: 1
               capabilities: [gpu]
 ```
+
+---
+
+### 📌 SEO Keywords
+`Thai TTS` `Thai Text to Speech` `ระบบแปลงข้อความเป็นเสียงภาษาไทย` `สร้างเสียงภาษาไทย` `Voice Cloning` `โคลนเสียงภาษาไทย` `F5-TTS` `Thonburian TTS` `FastAPI` `Docker` `n8n integration` `Make.com TTS API` `AI สร้างเสียง`

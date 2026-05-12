@@ -1,6 +1,8 @@
 services:
   thonburian-tts:
-    image: xylamana/thonburian-tts:latest
+    build: .
+    # ถ้ามีการ Push ขึ้น Docker Hub ให้เอาบรรทัดข้างล่างนี้ออกจาก Comment แล้ว Comment บรรทัด build: . แทน
+    # image: your-dockerhub-username/thonburian-tts:latest
     container_name: thonburian-tts
     restart: unless-stopped
     ports:
