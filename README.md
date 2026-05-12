@@ -11,56 +11,17 @@ Thai Text-to-Speech API ที่สร้างจาก [Thonburian TTS](https
 
 ---
 
-## 🚀 วิธีติดตั้ง (แบบทั่วไป)
+## 🚀 วิธีติดตั้ง (ใช้งานผ่าน Docker Hub)
 
-หากคุณ Clone Repository นี้มา ให้ใช้คำสั่งต่อไปนี้เพื่อรันระบบ:
+ระบบนี้ได้ถูกคอมไพล์และอัพโหลดขึ้น Docker Hub ให้พร้อมใช้งานแล้ว คุณไม่จำเป็นต้อง Build โค้ดเองให้เสียเวลา
 
-```bash
-# Build image (ครั้งแรกจะใช้เวลา 5-10 นาที เพราะต้องรวบรวม Dependencies)
-docker compose build
-
-# Start service
-docker compose up -d
-
-# ดู Logs
-docker compose logs -f
-```
-
-## 🌐 ทดสอบการทำงาน
-
-- เช็คสถานะ API: `http://localhost:8000/health`
-- ดู API Docs (Swagger): `http://localhost:8000/docs`
-
----
-
-## ☁️ การนำขึ้น Docker Hub (สำหรับใช้งานหลายเครื่อง)
-
-ถ้าคุณต้องการเอา Image ไปใช้เครื่องอื่นๆ โดยไม่ต้องมานั่ง Build ใหม่ให้เสียเวลา สามารถทำตามขั้นตอนนี้ได้เลยครับ:
-
-### 1. ล็อกอินเข้า Docker Hub ใน Terminal
-```bash
-docker login
-# ใส่ Username และ Password ของ Docker Hub ของคุณ
-```
-
-### 2. Tag Image
-สมมติว่าคุณมี Image ชื่อ `thonburian-tts:latest` และ Username ใน Docker Hub ของคุณคือ `myusername`
-```bash
-docker tag thonburian-tts:latest myusername/thonburian-tts:latest
-```
-
-### 3. Push Image ขึ้น Docker Hub
-```bash
-docker push myusername/thonburian-tts:latest
-```
-
-### 4. วิธีนำไปรันที่เครื่องอื่น
-ในเครื่องใหม่ คุณไม่ต้องเอาไฟล์โค้ดไปเลย เพียงแค่สร้างไฟล์ `docker-compose.yml` สั้นๆ แบบนี้:
+### 1. ดาวน์โหลดไฟล์ตั้งค่า
+คุณสามารถนำไฟล์ `docker-compose.yml` จาก Repository นี้ไปวางไว้ที่เครื่อง Server ที่ต้องการได้เลย โค้ดด้านในจะหน้าตาแบบนี้:
 
 ```yaml
 services:
   thonburian-tts:
-    image: myusername/thonburian-tts:latest # ใส่ชื่อ Image ของคุณ
+    image: xylamana/thonburian-tts:latest
     container_name: thonburian-tts
     restart: unless-stopped
     ports:
@@ -77,7 +38,19 @@ volumes:
   tts_models:
   tts_refs:
 ```
-แล้วรันคำสั่ง `docker compose up -d` ระบบจะไปดึง Image จาก Docker Hub มาให้ทันทีครับ
+
+### 2. รันคำสั่ง
+เปิด Terminal ในโฟลเดอร์ที่มีไฟล์ `docker-compose.yml` แล้วรัน:
+
+```bash
+docker compose up -d
+```
+ระบบจะไปดึง Image จาก Docker Hub มาให้และพร้อมใช้งานทันที!
+
+## 🌐 ทดสอบการทำงาน
+
+- เช็คสถานะ API: `http://localhost:8000/health`
+- ดู API Docs (Swagger): `http://localhost:8000/docs`
 
 ---
 
