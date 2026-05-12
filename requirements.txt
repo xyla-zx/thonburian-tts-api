@@ -1,0 +1,13 @@
+torch>=2.0.0
+torchaudio>=2.0.0
+cached-path
+f5-tts
+transformers
+librosa
+soundfile
+pydub
+vocos
+pythainlp
+numpy
+scipy
+huggingface-hub
